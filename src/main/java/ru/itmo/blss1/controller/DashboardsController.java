@@ -3,6 +3,7 @@ package ru.itmo.blss1.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.blss1.data.dto.DashboardDTO;
 import ru.itmo.blss1.data.dto.PinToDashboardDTO;
@@ -21,24 +22,28 @@ public class DashboardsController {
     DashboardService dashboardService;
 
     @PostMapping
+    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('USER'))")
     @ApiOperation("Создать доску")
     public Dashboard newDashboard(@RequestBody DashboardDTO dashboardDTO) {
         return dashboardService.newDashboard(dashboardDTO);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('USER'))")
     @ApiOperation("Получить dashboard по id")
     public Dashboard getDashboardById(@PathVariable int id){
         return dashboardService.getById(id);
     }
 
     @GetMapping("/by_owner/{owner_id}")
+    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('USER'))")
     @ApiOperation("Получить все dashboard пользователя")
-    public Iterable<Dashboard> getAllDashboardsByOwner(@PathVariable int owner_id){
+    public Iterable<Dashboard> getAllDashboardsByOwner(@PathVariable String owner_id){
         return dashboardService.getDashboardsByUser(owner_id);
     }
 
     @PostMapping("/add")
+    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('USER'))")
     @ApiOperation("Добавить пин на доску")
     public Dashboard newDashboard(@RequestBody PinToDashboardDTO pinToDashboardDTO) {
         return dashboardService.addToDashboard(pinToDashboardDTO.user_id, pinToDashboardDTO.pin_id, pinToDashboardDTO.dashboardName);

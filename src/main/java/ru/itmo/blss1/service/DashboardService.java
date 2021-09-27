@@ -1,7 +1,10 @@
 package ru.itmo.blss1.service;
 
+import bitronix.tm.BitronixTransactionManager;
+import bitronix.tm.TransactionManagerServices;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.blss1.data.dto.DashboardDTO;
 import ru.itmo.blss1.data.dto.UserDTO;
 import ru.itmo.blss1.data.entity.Dashboard;
@@ -29,7 +32,7 @@ public class DashboardService {
         return dashboardRepository.save(dashboard);
     }
 
-    public List<Dashboard> getDashboardsByUser(int userId) {
+    public List<Dashboard> getDashboardsByUser(String userId) {
         return dashboardRepository.getAllByOwner(userService.getById(userId));
     }
 
@@ -37,13 +40,27 @@ public class DashboardService {
         return dashboardRepository.getById(dashboardId);
     }
 
-    public Dashboard addToDashboard(int user_id, int pin_id, String dashboard_name) {
-        if (dashboardRepository.countDashboardsByOwnerAndName(userService.getById(user_id), dashboard_name) == 0) {
-            newDashboard(new DashboardDTO(dashboard_name, user_id));
+    public Dashboard addToDashboard(String user_id, int pin_id, String dashboard_name) {
+        BitronixTransactionManager btm = TransactionManagerServices.getTransactionManager();
+        try {
+            btm.begin();
+            if (dashboardRepository.countDashboardsByOwnerAndName(userService.getById(user_id), dashboard_name) == 0) {
+                newDashboard(new DashboardDTO(dashboard_name, user_id));
+            }
+            Dashboard dashboard = dashboardRepository.getDashboardsByOwnerAndName(userService.getById(user_id), dashboard_name).get(0);
+            dashboard.getPins().add(pinService.getById(pin_id));
+            dashboardRepository.deleteById(dashboard.getId());
+            Dashboard res =dashboardRepository.save(dashboard);
+            btm.commit();
+            return res;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            try {
+                btm.rollback();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        Dashboard dashboard = dashboardRepository.getDashboardsByOwnerAndName(userService.getById(user_id), dashboard_name).get(0);
-        dashboard.getPins().add(pinService.getById(pin_id));
-        dashboardRepository.deleteById(dashboard.getId());
-        return dashboardRepository.save(dashboard);
+        return null;
     }
 }

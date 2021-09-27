@@ -5,27 +5,28 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static javax.persistence.EnumType.STRING;
 
 @Data
 @Entity
 @Table(name = "users")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+        property = "login")
 public class User {
     @Id
-    @GeneratedValue
-    private Integer id;
     private String login;
     private String password;
     @CreationTimestamp
     private LocalDateTime whenRegistered;
+
+    @Enumerated(STRING)
+    @Column(nullable = false)
+    private Role role;
 
 
     @Override
@@ -33,15 +34,14 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return  id.equals(user.id) &&
-                login.equals(user.login) &&
+        return  login.equals(user.login) &&
                 password.equals(user.password) &&
                 Objects.equals(whenRegistered, user.whenRegistered);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, whenRegistered);
+        return Objects.hash(login, password, whenRegistered);
     }
 
 }
