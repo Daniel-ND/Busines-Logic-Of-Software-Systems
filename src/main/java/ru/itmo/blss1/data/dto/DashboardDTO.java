@@ -1,10 +1,14 @@
 package ru.itmo.blss1.data.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class DashboardDTO {
-    public DashboardDTO(String name, String ownerId) {
-        this.name = name;
-        this.ownerId = ownerId;
-    }
     public String name;
-    public String ownerId;
+
+    @ApiModelProperty(hidden = true)
+    public String ownerLogin;
 }

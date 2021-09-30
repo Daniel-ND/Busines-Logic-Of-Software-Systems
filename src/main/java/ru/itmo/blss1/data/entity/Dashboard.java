@@ -20,7 +20,7 @@ public class Dashboard implements Serializable {
 
     private String name;
 
-    @ManyToMany
-    @JoinColumn(name = "pin_id")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id")
     private Set<Pin> pins = new HashSet<>();
 }

@@ -17,17 +17,23 @@ import ru.itmo.blss1.service.UserService;
 public class UsersController {
     private final UserService userService;
 
-    @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('USER'))")
-    @ApiOperation("Получить пользователя по id")
+    @GetMapping("/{login}")
+    @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or hasRole('ROLE_USER'))")
+    @ApiOperation("Получить пользователя по login")
     public User getUserById(@PathVariable String login) {
         return userService.getById(login);
     }
 
     @PostMapping
     @ApiOperation("Создать пользователя")
-    @PreAuthorize("isAuthenticated() and (hasRole('ADMIN') or hasRole('USER'))")
     public User newUser(@RequestBody UserDTO userDTO) {
         return userService.newUser(userDTO);
+    }
+
+    @GetMapping("/delete_user/{login}")
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
+    @ApiOperation("Удалить пользователя")
+    public void deleteUser(@PathVariable String login) {
+        userService.deleteUser(login);
     }
 }

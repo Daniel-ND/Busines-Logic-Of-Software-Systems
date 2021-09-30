@@ -1,7 +1,9 @@
 package ru.itmo.blss1.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -20,14 +22,16 @@ import static javax.persistence.EnumType.STRING;
 public class User {
     @Id
     private String login;
+
+    @JsonIgnore
     private String password;
+
     @CreationTimestamp
     private LocalDateTime whenRegistered;
 
     @Enumerated(STRING)
     @Column(nullable = false)
     private Role role;
-
 
     @Override
     public boolean equals(Object o) {

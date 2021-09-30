@@ -3,15 +3,18 @@ package ru.itmo.blss1.service;
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.TransactionManagerServices;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.itmo.blss1.controller.DashboardsController;
 import ru.itmo.blss1.data.dto.DashboardDTO;
-import ru.itmo.blss1.data.dto.UserDTO;
+import ru.itmo.blss1.data.dto.PinToDashboardDTO;
 import ru.itmo.blss1.data.entity.Dashboard;
-import ru.itmo.blss1.data.entity.Pin;
-import ru.itmo.blss1.data.entity.User;
 import ru.itmo.blss1.data.repository.DashboardRepository;
 
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import java.util.List;
 
 @Service
@@ -24,8 +27,8 @@ public class DashboardService {
     public Dashboard newDashboard(DashboardDTO dashboardDTO) {
         Dashboard dashboard = new Dashboard();
         dashboard.setName(dashboardDTO.name);
-        dashboard.setOwner(userService.getById(dashboardDTO.ownerId));
-        Integer count = dashboardRepository.countDashboardsByOwnerAndName(userService.getById(dashboardDTO.ownerId), dashboardDTO.name);
+        dashboard.setOwner(userService.getById(dashboardDTO.getOwnerLogin()));
+        Integer count = dashboardRepository.countDashboardsByOwnerAndName(userService.getById(dashboardDTO.getOwnerLogin()), dashboardDTO.name);
         if (count > 0)
             throw new IllegalArgumentException("Dashboard with name " + dashboardDTO.name
                     + " already exists");
@@ -40,23 +43,34 @@ public class DashboardService {
         return dashboardRepository.getById(dashboardId);
     }
 
-    public Dashboard addToDashboard(String user_id, int pin_id, String dashboard_name) {
-        BitronixTransactionManager btm = TransactionManagerServices.getTransactionManager();
+//    @Transactional
+    public Dashboard addToDashboard(PinToDashboardDTO pinToDashboardDTO) {
+        Logger logger = LoggerFactory.getLogger(DashboardService.class);
+//        BitronixTransactionManager btm = TransactionManagerServices.getTransactionManager();
+        Transaction trx = null;
         try {
-            btm.begin();
-            if (dashboardRepository.countDashboardsByOwnerAndName(userService.getById(user_id), dashboard_name) == 0) {
-                newDashboard(new DashboardDTO(dashboard_name, user_id));
+            trx = TransactionManagerServices.getTransactionManager().getTransaction();
+        } catch (SystemException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (dashboardRepository.countDashboardsByOwnerAndName(userService.getById(pinToDashboardDTO.getUserLogin()), pinToDashboardDTO.getDashboardName()) == 0) {
+                logger.info("dashboard not found");
+                newDashboard(new DashboardDTO(pinToDashboardDTO.getDashboardName(), pinToDashboardDTO.getUserLogin()));
             }
-            Dashboard dashboard = dashboardRepository.getDashboardsByOwnerAndName(userService.getById(user_id), dashboard_name).get(0);
-            dashboard.getPins().add(pinService.getById(pin_id));
-            dashboardRepository.deleteById(dashboard.getId());
-            Dashboard res =dashboardRepository.save(dashboard);
-            btm.commit();
+            Dashboard dashboard = dashboardRepository
+                    .getDashboardsByOwnerAndName(userService.getById(pinToDashboardDTO.getUserLogin()),
+                            pinToDashboardDTO.getDashboardName()).get(0);
+            dashboard.getPins().add(pinService.getById(pinToDashboardDTO.getPinId()));
+//            dashboardRepository.deleteById(dashboard.getId());
+            dashboard.setName("joppa2");
+            Dashboard res = dashboardRepository.save(dashboard);
+            trx.commit();
             return res;
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
-                btm.rollback();
+                trx.rollback();
             } catch (Exception e) {
                 e.printStackTrace();
             }

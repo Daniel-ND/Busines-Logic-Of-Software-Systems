@@ -36,7 +36,7 @@ public class PinService {
     public Pin newPin(PinDTO pinDTO) {
         Pin pin = new Pin();
         pin.setUrl(pinDTO.url);
-        pin.setUploadedBy(userService.getById(pinDTO.uploadedById));
+        pin.setUploadedBy(userService.getById(pinDTO.getUploadedBy()));
         if (!isCorrectURL(pinDTO.url))
             throw new EntityExistsException("wrong URL");
         return pinRepository.save(pin);

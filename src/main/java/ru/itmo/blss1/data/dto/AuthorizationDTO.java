@@ -21,16 +21,10 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class AuthorizationDTO {
 
-//    private static final long serialVersionUID = -2137824490351989146L;
-
-    @JsonProperty(access = READ_ONLY)
-    @JsonInclude(NON_NULL)
-    private Long id;
-
     @NotBlank
     @JsonProperty(access = WRITE_ONLY)
     @JsonInclude(NON_NULL)
-    private String username;
+    private String login;
 
     @NotBlank
     @JsonProperty(access = WRITE_ONLY)
@@ -40,11 +34,6 @@ public class AuthorizationDTO {
     @JsonProperty(access = READ_ONLY)
     @JsonInclude(NON_NULL)
     private String token;
-
-    @JsonProperty(access = READ_ONLY)
-    @JsonInclude(NON_NULL)
-    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSXXX", timezone = "UTC")
-    private Instant expiresAt;
 
     @JsonProperty(access = READ_ONLY)
     @JsonInclude(NON_NULL)

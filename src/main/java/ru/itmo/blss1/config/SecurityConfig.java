@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.jaas.AbstractJaasAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,12 +21,12 @@ import ru.itmo.blss1.config.jwt.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtFilter jwtFilter;
-
 
     private final AbstractJaasAuthenticationProvider jaasAuthenticationProvider;
 
@@ -38,19 +39,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+//                .sessionManagement()
+//                .sessionCreationPolicy(STATELESS)
+                .csrf()
+                .disable()
                 .authorizeRequests()
-//                .antMatchers("/auth").permitAll()
-//                .antMatchers("/register_moderator").hasRole("ADMIN")
-//                .antMatchers("/waiting_list", "/confirm", "/cancel").hasRole("MODERATOR")
-//                .antMatchers("/book", "/hotels", "/email").hasRole("ANONYMOUS"  )
+//                .antMatchers("/pins/get_all").hasRole("USER")
+                .antMatchers("/swagger-ui.html").permitAll()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
     }
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(jaasAuthenticationProvider);
     }
+
 }

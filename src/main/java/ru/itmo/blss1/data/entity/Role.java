@@ -5,9 +5,8 @@ import static java.lang.String.format;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum Role {
-    USER,
-    ADMIN,
-    MANAGER;
+    ROLE_USER,
+    ROLE_ADMIN;
 
     @JsonCreator
     public static Role forValue(final String value) {

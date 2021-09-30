@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.blss1.data.dto.AuthorizationDTO;
+import ru.itmo.blss1.data.dto.UserDTO;
 import ru.itmo.blss1.service.AuthorizationService;
 import javax.validation.Valid;
 
@@ -19,12 +20,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Api(tags = {"authorization"}, description = "Авторизация")
 public class AuthorizationController {
     private final AuthorizationService authorizationService;
-    @PostMapping(path = "/login",
-            consumes = APPLICATION_JSON_VALUE,
-            produces = APPLICATION_JSON_VALUE)
+
+    @PostMapping(path = "/login")
     @PreAuthorize("permitAll()")
-    public AuthorizationDTO authorize(final @RequestBody @Valid AuthorizationDTO authorizationDto)
+    public AuthorizationDTO authorize(final @RequestBody @Valid UserDTO userDTO)
             throws Exception {
-        return authorizationService.authorize(authorizationDto);
+        return authorizationService.authorize(userDTO);
     }
 }

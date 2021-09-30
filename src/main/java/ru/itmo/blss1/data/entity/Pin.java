@@ -28,7 +28,7 @@ public class Pin {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Pin pin = (Pin) o;
-        return id == pin.id;
+        return id.equals(pin.id);
     }
 
 }
