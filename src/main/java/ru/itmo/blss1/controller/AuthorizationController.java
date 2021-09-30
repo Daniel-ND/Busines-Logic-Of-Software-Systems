@@ -12,8 +12,6 @@ import ru.itmo.blss1.data.dto.UserDTO;
 import ru.itmo.blss1.service.AuthorizationService;
 import javax.validation.Valid;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 @RestController
 @RequestMapping("/auth")
 @AllArgsConstructor

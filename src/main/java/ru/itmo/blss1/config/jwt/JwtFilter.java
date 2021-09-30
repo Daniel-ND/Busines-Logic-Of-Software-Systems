@@ -33,14 +33,12 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         logger.info("do filter...");
-        //String token = getTokenFromRequest((HttpServletRequest) servletRequest);
         String token = ((HttpServletRequest) servletRequest).getHeader(AUTHORIZATION);
         if (token == null)
             logger.info("tocken is null");
         logger.info(jwtProvider.validateToken(token));
         if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
-            //logger.info(userLogin);
             CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(userLogin);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             logger.info(auth.getPrincipal());
@@ -49,13 +47,4 @@ public class JwtFilter extends GenericFilterBean {
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
-
-//    private String getTokenFromRequest(HttpServletRequest request) {
-//        String bearer = request.getHeader(AUTHORIZATION);
-//        log.info(bearer);
-//        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
-//            return bearer.substring(7);
-//        }
-//        return null;
-//    }
 }
