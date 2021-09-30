@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.blss1.data.dto.UserDTO;
 import ru.itmo.blss1.data.entity.Role;
 import ru.itmo.blss1.data.entity.User;
@@ -27,8 +28,9 @@ public class UserService {
         return usersRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(String login) {
-        usersRepository.deleteByLogin(login);
+        usersRepository.removeUserByLogin(login);
     }
 
     public User loadUserByUsername(String s) {

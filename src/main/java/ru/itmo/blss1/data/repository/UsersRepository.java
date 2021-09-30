@@ -11,7 +11,7 @@ public interface UsersRepository extends CrudRepository<User, Integer> {
         return user.getRole();
     }
 
-    void deleteByLogin(String login);
+    void removeUserByLogin(String login);
 
 }
 
