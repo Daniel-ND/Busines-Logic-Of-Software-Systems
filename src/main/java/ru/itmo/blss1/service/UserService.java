@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.blss1.data.dto.UserDTO;
+import ru.itmo.blss1.data.entity.Pin;
 import ru.itmo.blss1.data.entity.Role;
 import ru.itmo.blss1.data.entity.User;
 import ru.itmo.blss1.data.repository.UsersRepository;
@@ -35,5 +36,9 @@ public class UserService {
 
     public User loadUserByUsername(String s) {
         return usersRepository.getByLogin(s);
+    }
+
+    public Iterable<User> getAll() {
+        return usersRepository.findAll();
     }
 }

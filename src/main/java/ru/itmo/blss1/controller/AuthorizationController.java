@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.blss1.data.dto.AuthorizationDTO;
 import ru.itmo.blss1.data.dto.UserDTO;
 import ru.itmo.blss1.service.AuthorizationService;
+
 import javax.validation.Valid;
 
 @RestController

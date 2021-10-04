@@ -8,6 +8,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -35,6 +36,9 @@ public class User {
     @Enumerated(STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Email
+    private String email;
 
     @Override
     public boolean equals(Object o) {

@@ -18,6 +18,7 @@ public class AuthorizationService {
     private final UsersRepository userRepository;
     private final JwtProvider jwtProvider;
 
+
     public AuthorizationDTO authorize(final UserDTO userDTO)
             throws Exception {
         final var authentication =

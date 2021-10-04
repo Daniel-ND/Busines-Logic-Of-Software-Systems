@@ -3,10 +3,12 @@ package ru.itmo.blss1.data.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -30,5 +32,8 @@ public class Pin {
         Pin pin = (Pin) o;
         return id.equals(pin.id);
     }
+
+    @CreationTimestamp
+    private LocalDateTime uploadedAt;
 
 }

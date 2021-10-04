@@ -1,5 +1,6 @@
 package ru.itmo.blss1.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import ru.itmo.blss1.data.dto.DashboardDTO;
 import ru.itmo.blss1.data.dto.PinDTO;
 import ru.itmo.blss1.data.entity.Pin;
 import ru.itmo.blss1.data.entity.User;
+import ru.itmo.blss1.service.KafkaService;
 import ru.itmo.blss1.service.PinService;
 
 @RestController
@@ -20,6 +22,7 @@ import ru.itmo.blss1.service.PinService;
 @Api(tags = {"pins"}, description = "Управление pins")
 public class PinsController {
     PinService pinService;
+    KafkaService kafkaService;
 
     @Autowired
     private JwtProvider jwtProvider;
@@ -27,9 +30,10 @@ public class PinsController {
     @PostMapping
     @ApiOperation("Создать пин")
     @PreAuthorize("isAuthenticated() and (hasRole('ROLE_ADMIN') or hasRole('ROLE_USER'))")
-    public Pin newPin(@RequestHeader HttpHeaders headers, @RequestBody PinDTO pinDTO) {
+    public PinDTO newPin(@RequestHeader HttpHeaders headers, @RequestBody PinDTO pinDTO) throws JsonProcessingException {
         pinDTO.setUploadedBy(jwtProvider.getLoginFromToken(headers.getFirst(HttpHeaders.AUTHORIZATION)));
-        return pinService.newPin(pinDTO);
+        kafkaService.send(pinDTO);
+        return pinDTO;
     }
 
     @GetMapping("/{id}")
